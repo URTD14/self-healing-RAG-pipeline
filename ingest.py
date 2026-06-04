@@ -8,10 +8,19 @@ import os
 from pathlib import Path
 
 from langchain_chroma import Chroma
-from langchain_community.document_loaders import PyPDFLoader, TextLoader
+from langchain_community.document_loaders import (
+    CSVLoader,
+    PyPDFLoader,
+    TextLoader,
+    Docx2txtLoader,
+)
 from langchain_core.documents import Document
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from bs4 import BeautifulSoup
+
+
+SUPPORTED_EXTENSIONS = {".pdf", ".txt", ".md", ".csv", ".docx", ".html"}
 
 
 CHROMA_DIR = os.path.join(os.path.dirname(__file__), "chroma_db")
@@ -34,13 +43,31 @@ def load_documents(file_paths: list[str]) -> list[Document]:
     docs = []
     for path in file_paths:
         ext = Path(path).suffix.lower()
-        if ext == ".pdf":
-            loader = PyPDFLoader(path)
-        elif ext in (".txt", ".md"):
-            loader = TextLoader(path)
-        else:
+        try:
+            if ext == ".pdf":
+                loader = PyPDFLoader(path)
+                docs.extend(loader.load())
+            elif ext in (".txt", ".md"):
+                loader = TextLoader(path)
+                docs.extend(loader.load())
+            elif ext == ".csv":
+                loader = CSVLoader(path)
+                docs.extend(loader.load())
+            elif ext == ".docx":
+                loader = Docx2txtLoader(path)
+                docs.extend(loader.load())
+            elif ext == ".html":
+                with open(path, "r", encoding="utf-8", errors="ignore") as f:
+                    soup = BeautifulSoup(f.read(), "html.parser")
+                    text = soup.get_text(separator="\n", strip=True)
+                    if text.strip():
+                        docs.append(Document(
+                            page_content=text,
+                            metadata={"source": path},
+                        ))
+        except Exception as e:
+            print(f"Error loading {path}: {e}")
             continue
-        docs.extend(loader.load())
     return docs
 
 

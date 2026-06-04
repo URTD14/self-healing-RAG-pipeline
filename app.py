@@ -16,11 +16,11 @@ st.set_page_config(page_title="Self-Healing RAG", page_icon="", layout="wide")
 
 with st.sidebar:
     st.header("Document Ingestion")
-    st.caption("Upload PDF or TXT files to build your knowledge base.")
+    st.caption("Upload documents to build your knowledge base.")
 
     uploaded_files = st.file_uploader(
         "Choose files",
-        type=["pdf", "txt"],
+        type=["pdf", "txt", "md", "csv", "docx", "html"],
         accept_multiple_files=True,
         label_visibility="collapsed",
     )
