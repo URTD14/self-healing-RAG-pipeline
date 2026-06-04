@@ -19,12 +19,21 @@ from ingest import get_retriever
 
 load_dotenv()
 
+
+def _get_groq_key() -> str:
+    """Get Groq API key: Streamlit secrets (cloud) or .env (local)."""
+    try:
+        import streamlit as st
+        return st.secrets["GROQ_API_KEY"]
+    except (ImportError, FileNotFoundError, KeyError):
+        return os.getenv("GROQ_API_KEY", "")
+
 MAX_RETRIES = 3
 
 llm = ChatGroq(
     model="llama-3.3-70b-versatile",
     temperature=0,
-    api_key=os.getenv("GROQ_API_KEY"),
+    api_key=_get_groq_key(),
 )
 
 
