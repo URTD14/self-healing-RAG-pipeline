@@ -12,6 +12,12 @@
   <em>A RAG system that doesn't just retrieve and generate — it <strong>critiques its own output</strong> and retries with reformulated queries when the answer isn't good enough.</em>
 </p>
 
+<p align="center">
+  <a href="https://self-healing-rag-pipeline.streamlit.app/" target="_blank">
+    <img src="https://img.shields.io/badge/Try%20Live-Demo-blue?logo=streamlit&logoColor=white" alt="Live Demo"/>
+  </a>
+</p>
+
 ---
 
 ## How It Works
@@ -71,6 +77,19 @@ If any metric falls below its threshold, the system **fails** the answer and gen
 
 ---
 
+## Supported File Types
+
+| Format | Extension | Loader |
+|--------|-----------|--------|
+| PDF | `.pdf` | PyPDFLoader |
+| Plain Text | `.txt` | TextLoader |
+| Markdown | `.md` | TextLoader |
+| CSV | `.csv` | CSVLoader |
+| Word Document | `.docx` | Docx2txtLoader |
+| HTML | `.html` | BeautifulSoup |
+
+---
+
 ## Quick Start
 
 ### 1. Clone & install
@@ -101,7 +120,7 @@ streamlit run app.py
 
 | Step | Action |
 |------|--------|
-| **1. Upload** | Use the sidebar to drop PDF or TXT files |
+| **1. Upload** | Use the sidebar to drop PDF, TXT, MD, CSV, DOCX, or HTML files |
 | **2. Ingest** | Click "Ingest Documents" — files are chunked, embedded, stored |
 | **3. Ask** | Type your question and hit "Run Pipeline" |
 | **4. Self-Heal** | Watch the system critique itself and retry if needed |
@@ -124,12 +143,15 @@ When you ask a question, the system:
 
 ```
 self-healing-RAG-pipeline/
-├── app.py              # Streamlit UI
+├── app.py              # Streamlit UI with protobuf fix
 ├── pipeline.py         # LangGraph self-healing RAG graph
-├── ingest.py           # Document ingestion & embedding
+├── ingest.py           # Document ingestion (PDF, TXT, MD, CSV, DOCX, HTML)
 ├── requirements.txt    # Python dependencies
 ├── .env                # API key (gitignored)
+├── .streamlit/
+│   └── config.toml     # Streamlit server config
 ├── data/               # Drop files here
+├── LICENSE             # MIT License
 └── README.md
 ```
 
